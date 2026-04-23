@@ -25,4 +25,4 @@ backend/db/*.sqlite3
 .idea/
 
 # その他
-.env
+.envcookie.txt
