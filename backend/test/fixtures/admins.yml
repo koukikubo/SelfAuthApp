@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  password_digest: MyString
+  effective_from: 2026-04-23
+  effective_to: 2026-04-23
+  account_locked: false
+  failed_attempts: 1
+  deleted: false
+
+two:
+  name: MyString
+  password_digest: MyString
+  effective_from: 2026-04-23
+  effective_to: 2026-04-23
+  account_locked: false
+  failed_attempts: 1
+  deleted: false
