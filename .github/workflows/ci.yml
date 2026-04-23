@@ -5,82 +5,78 @@ on:
   push:
     branches: [main]
 
+defaults:
+  run:
+    working-directory: backend
+
 jobs:
   scan_ruby:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: backend/.ruby-version
+          working-directory: backend
           bundler-cache: true
 
       - run: bin/brakeman --no-pager
 
   scan_js:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: backend/.ruby-version
+          working-directory: backend
           bundler-cache: true
 
       - run: bin/importmap audit
 
   lint:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: backend/.ruby-version
+          working-directory: backend
           bundler-cache: true
 
       - run: bin/rubocop -f github
 
   test:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: backend
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:password@localhost:5432/self_auth_app_test
 
     services:
       postgres:
-        image: postgres
+        image: postgres:16
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: password
         ports:
           - 5432:5432
-        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
       - uses: actions/checkout@v4
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: backend/.ruby-version
+          working-directory: backend
           bundler-cache: true
 
-      - run: bin/rails db:test:prepare
+      - run: bin/rails db:prepare
 
       - run: bundle exec rspec
