@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include Authentication
   # 全てのコントローラーでセッションを使用できるようにする
   include ActionController::Cookies
 
