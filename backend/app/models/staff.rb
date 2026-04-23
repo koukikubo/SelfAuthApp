@@ -11,6 +11,7 @@ class Staff < ApplicationRecord
   }
 
   validates :name, uniqueness: true
+  validates :role, presence: true
 
   def active_for_login?
     # 論理削除されていたら不可

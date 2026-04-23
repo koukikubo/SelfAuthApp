@@ -7,6 +7,9 @@ Rails.application.routes.draw do
       delete "logout", to: "sessions#destroy"
 
       get "csrf", to: "csrf#show" 
+
+      get "login_candidates", to: "login_candidates#index"
+
     end
   end
 end
