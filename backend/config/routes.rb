@@ -9,7 +9,6 @@ Rails.application.routes.draw do
       get "csrf", to: "csrf#show" 
 
       get "login_candidates", to: "login_candidates#index"
-
     end
   end
 end

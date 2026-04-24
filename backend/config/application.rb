@@ -25,5 +25,6 @@ module SelfAuthApp
     config.active_record.default_timezone = :local
     config.i18n.default_locale = :ja
     config.action_dispatch.cookies_same_site_protection = :lax
+    Rails.application.config.action_controller.forgery_protection_origin_check = true
   end
 end
