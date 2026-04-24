@@ -4,15 +4,16 @@ module Auth
     def authenticate_user(user, password)
       # ユーザーが存在しない場合や、ログインが無効な場合はnilを返す
       return nil unless user
-      return nil unless user.active_for_login?
       # パスワードが正しいか確認し、成功なら失敗回数をリセットしてユーザーを返す
-      if user.authenticate(password)
-        user.reset_failed_attempts!
-        user
-      else
+      unless user.authenticate(password)
         user.register_failed_attempt!
-        nil
+        return nil
       end
+      # ログイン成功した場合は失敗回数をリセットする
+      user.reset_failed_attempts!
+      # ユーザーがログイン可能な状態か確認する
+      return nil unless user.active_for_login?
+      user
     end
   end
 end
