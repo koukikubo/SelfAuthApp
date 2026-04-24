@@ -1,4 +1,6 @@
 class Api::V1::StaffSessionsController < ApplicationController
+  skip_forgery_protection only: :create
+
   def create
     staff = Auth::Staff::StaffAuthenticator.new(params[:id], params[:password]).authenticate
 

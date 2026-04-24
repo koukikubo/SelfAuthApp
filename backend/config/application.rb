@@ -24,7 +24,8 @@ module SelfAuthApp
     config.time_zone = "Tokyo"
     config.active_record.default_timezone = :local
     config.i18n.default_locale = :ja
-    config.action_dispatch.cookies_same_site_protection = :lax
+    config.action_dispatch.cookies_same_site_protection = :none
+    config.action_dispatch.cookies_secure = false
     Rails.application.config.action_controller.forgery_protection_origin_check = true
   end
 end
