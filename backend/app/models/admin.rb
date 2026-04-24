@@ -14,7 +14,7 @@ class Admin < ApplicationRecord
     # 適用期間開始日よりも前なら不可
     return false if effective_from > Date.current
     # 適用終了日よりも過去なら不可
-    return false if effective_to.present? && effective_to < Date.current
+    return false if effective_to.present? && effective_to <= Date.current
     # 全てクリアしている場合はログイン可能とする
     true
   end

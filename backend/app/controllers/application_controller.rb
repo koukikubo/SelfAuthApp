@@ -8,11 +8,19 @@ class ApplicationController < ActionController::Base
   private
   
   def current_user
-    if session[:admin_id]
-      Admin.find_by(id: session[:admin_id])
-    elsif session[:staff_id]
-      Staff.find_by(id: session[:staff_id])
-    end
-  end
+    user =
+      if session[:admin_id]
+        Admin.find_by(id: session[:admin_id])
+      elsif session[:staff_id]
+        Staff.find_by(id: session[:staff_id])
+      end
 
+    # 無効ユーザーならセッション破棄
+    unless user&.active_for_login?
+      reset_session
+      return nil
+    end
+
+    user
+  end
 end

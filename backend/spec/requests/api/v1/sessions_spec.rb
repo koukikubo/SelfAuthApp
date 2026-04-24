@@ -28,7 +28,7 @@ RSpec.describe "Api::V1::Sessions", type: :request do
     it "ログイン成功する" do
       post "/api/v1/admin/login",
         params: {
-          name: "管理者",
+          id: admin.id,
           password: "password"
         },
         headers: {
@@ -42,7 +42,7 @@ RSpec.describe "Api::V1::Sessions", type: :request do
     it "ログイン失敗する（パスワード違い）" do
       post "/api/v1/admin/login",
         params: {
-          name: "管理者",
+          id: admin.id,
           password: "wrong"
         },
         headers: {
@@ -61,7 +61,7 @@ RSpec.describe "Api::V1::Sessions", type: :request do
       # ログイン
       post "/api/v1/admin/login",
         params: {
-          name: "管理者",
+          id: admin.id,
           password: "password"
         },
         headers: {
@@ -75,7 +75,7 @@ RSpec.describe "Api::V1::Sessions", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(json["type"]).to eq("admin")
-      expect(json["name"]).to eq("管理者")
+      expect(json["id"]).to eq(admin.id)
     end
   end
 
@@ -87,7 +87,7 @@ RSpec.describe "Api::V1::Sessions", type: :request do
       # ① ログイン
       post "/api/v1/admin/login",
         params: {
-          name: "管理者",
+          id: admin.id,
           password: "password"
         },
         headers: {
@@ -114,7 +114,7 @@ RSpec.describe "Api::V1::Sessions", type: :request do
     it "ログイン中ならuserが返る" do
       post "/api/v1/admin/login",
         params: {
-          name: "管理者",
+          id: admin.id,
           password: "password"
         },
         headers: {

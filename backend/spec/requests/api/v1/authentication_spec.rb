@@ -15,7 +15,7 @@ RSpec.describe "Sessions API", type: :request do
 
   let!(:staff) do
     Staff.create!(
-      name: "スタッフ",
+      name: "大阪太郎",
       password: "password",
       password_confirmation: "password",
       effective_from: Date.current
@@ -44,7 +44,7 @@ RSpec.describe "Sessions API", type: :request do
   # ===============================
   it "adminログイン成功 → session取得できる" do
     post "/api/v1/admin/login",
-      params: { name: "管理者", password: "password" },
+      params: { id: admin.id, password: "password" },
       headers: { "X-CSRF-Token" => csrf_token }
 
     get "/api/v1/session"
@@ -53,7 +53,7 @@ RSpec.describe "Sessions API", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(json["type"]).to eq("admin")
-    expect(json["name"]).to eq("管理者")
+    expect(json["id"]).to eq(admin.id)
   end
 
   # ===============================
@@ -61,7 +61,7 @@ RSpec.describe "Sessions API", type: :request do
   # ===============================
   it "staffログイン成功 → session取得できる" do
     post "/api/v1/staff/login",
-      params: { name: "スタッフ", password: "password" },
+      params: { id: staff.id, password: "password" },
       headers: { "X-CSRF-Token" => csrf_token }
 
     get "/api/v1/session"
@@ -70,7 +70,7 @@ RSpec.describe "Sessions API", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(json["type"]).to eq("staff")
-    expect(json["name"]).to eq("スタッフ")
+    expect(json["id"]).to eq(staff.id)
   end
 
   # ===============================
@@ -78,7 +78,7 @@ RSpec.describe "Sessions API", type: :request do
   # ===============================
   it "ログイン失敗時は401" do
     post "/api/v1/admin/login",
-      params: { name: "管理者", password: "wrong" },
+      params: { id: admin.id, password: "wrong" },
       headers: { "X-CSRF-Token" => csrf_token }
 
     expect(response).to have_http_status(:unauthorized)
@@ -90,7 +90,7 @@ RSpec.describe "Sessions API", type: :request do
   it "ログアウト成功 → session消える" do
     # ログイン
     post "/api/v1/admin/login",
-      params: { name: "管理者", password: "password" },
+      params: { id: admin.id, password: "password" },
       headers: { "X-CSRF-Token" => csrf_token }
 
     # ログアウト
