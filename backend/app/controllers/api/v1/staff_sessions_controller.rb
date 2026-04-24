@@ -1,6 +1,6 @@
 class Api::V1::StaffSessionsController < ApplicationController
   def create
-    staff = Auth::Staff::StaffAuthenticator.new(params[:name], params[:password]).authenticate
+    staff = Auth::Staff::StaffAuthenticator.new(params[:id], params[:password]).authenticate
 
     if staff
       reset_session

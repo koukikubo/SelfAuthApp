@@ -1,6 +1,6 @@
 class Api::V1::AdminSessionsController < ApplicationController
   def create
-    admin = Auth::Admin::AdminAuthenticator.new(params[:name], params[:password]).authenticate
+    admin = Auth::Admin::AdminAuthenticator.new(params[:id], params[:password]).authenticate
 
     if admin
       reset_session

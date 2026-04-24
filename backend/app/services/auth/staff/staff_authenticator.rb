@@ -1,14 +1,14 @@
 module Auth
   module Staff
     class StaffAuthenticator < BaseAuthenticator
-      def initialize(name, password)
-        @name = name
+      def initialize(id, password)
+        @id = id
         @password = password
       end
 
     # スタッフを認証する
       def authenticate
-        staff = ::Staff.find_by(name: @name)
+        staff = ::Staff.find_by(id: @id)
         return nil unless staff
         authenticate_user(staff, @password)
 
