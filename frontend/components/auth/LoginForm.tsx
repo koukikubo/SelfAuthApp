@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 import {
   Select,
@@ -26,26 +31,17 @@ type Props = {
   candidates: Candidate[];
 };
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
-
 export default function LoginForm({ candidates }: Props) {
-  const router = useRouter();
-
   const [selected, setSelected] = useState<Candidate | null>(null);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // --- CSRF取得（Rails用） ---
   const fetchCsrfToken = async () => {
-    const res = await fetch(`${API_BASE}/api/v1/csrf`, {
-      credentials: "include",
-    });
+    const res = await fetch("/api/v1/csrf", { credentials: "include" });
     const data = await res.json();
     return data.csrf_token;
   };
 
-  // --- ログイン処理 ---
   const handleLogin = async () => {
     if (!selected) {
       alert("ユーザーを選択してください");
@@ -61,7 +57,7 @@ export default function LoginForm({ candidates }: Props) {
           ? "/api/v1/admin/login"
           : "/api/v1/staff/login";
 
-      const res = await fetch(`${API_BASE}${endpoint}`, {
+      const res = await fetch(endpoint, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -71,7 +67,7 @@ export default function LoginForm({ candidates }: Props) {
         body: JSON.stringify({
           id: selected.id,
           type: selected.type,
-          password,
+          password: password.trim(),
         }),
       });
 
@@ -80,7 +76,7 @@ export default function LoginForm({ candidates }: Props) {
         return;
       }
 
-      router.push("/");
+      window.location.assign("/");
     } catch (e) {
       console.error(e);
       alert("通信エラー");
@@ -90,50 +86,60 @@ export default function LoginForm({ candidates }: Props) {
   };
 
   return (
-    <Card className="w-90">
-      <CardHeader>
-        <CardTitle>ログイン</CardTitle>
-      </CardHeader>
+    <div className="flex min-h-screen items-center justify-center bg-muted/40">
+      <Card className="w-150 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-xl">システムログイン</CardTitle>
+          <CardDescription>
+            担当者を選択してログインしてください
+          </CardDescription>
+        </CardHeader>
 
-      <CardContent className="space-y-4">
-        {/* ユーザー選択 */}
-        <Select
-          onValueChange={(value) => {
-            const [type, id] = value.split("-");
+        <CardContent className="space-y-6">
+          {/* 入力エリア */}
+          <div className="flex gap-3">
+            {/* Select */}
+            <Select
+              onValueChange={(value) => {
+                const [type, id] = value.split("-");
+                const user = candidates.find(
+                  (c) => c.type === type && String(c.id) === id,
+                );
+                if (user) setSelected(user);
+              }}
+            >
+              <SelectTrigger className="w-60">
+                <SelectValue placeholder="担当者を選択してください" />
+              </SelectTrigger>
 
-            const user = candidates.find(
-              (c) => c.type === type && String(c.id) === id,
-            );
+              <SelectContent>
+                {candidates.map((c) => (
+                  <SelectItem
+                    key={`${c.type}-${c.id}`}
+                    value={`${c.type}-${c.id}`}
+                  >
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            if (user) setSelected(user);
-          }}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="ユーザーを選択" />
-          </SelectTrigger>
+            {/* Password */}
+            <Input
+              type="password"
+              placeholder="パスワードを入力してください"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="flex-1"
+            />
+          </div>
 
-          <SelectContent>
-            {candidates.map((c) => (
-              <SelectItem key={`${c.type}-${c.id}`} value={`${c.type}-${c.id}`}>
-                {c.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {/* パスワード */}
-        <Input
-          type="password"
-          placeholder="パスワード"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        {/* ログインボタン */}
-        <Button onClick={handleLogin} disabled={loading} className="w-full">
-          {loading ? "ログイン中..." : "ログイン"}
-        </Button>
-      </CardContent>
-    </Card>
+          {/* Button */}
+          <Button onClick={handleLogin} disabled={loading} className="w-full">
+            {loading ? "ログイン中..." : "ログイン"}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
