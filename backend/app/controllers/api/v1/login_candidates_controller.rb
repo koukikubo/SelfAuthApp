@@ -1,10 +1,19 @@
 class Api::V1::LoginCandidatesController < ApplicationController
   def index
-    # Admin取得（削除除外）
-    admins = Admin.where(deleted: false).select(:id, :name)
-    # Staff取得（削除除外）
-    staffs = Staff.where(deleted: false).select(:id, :name)
-    # type付与
+    today = Date.current
+    admins = Admin
+      .where(deleted: false, account_locked: false)
+      .where("effective_from <= ?", today)
+      .where("effective_to IS NULL OR effective_to > ?", today)
+      .select(:id, :name)
+
+    staffs = Staff
+      .where(deleted: false, account_locked: false)
+      .where("effective_from <= ?", today)
+      .where("effective_to IS NULL OR effective_to > ?", today)
+      .select(:id, :name)
+
+    # ログイン時にAPI分岐させるため、Typeを付与
     admin_data = admins.map do |a|
       {
         id: a.id,
@@ -12,6 +21,7 @@ class Api::V1::LoginCandidatesController < ApplicationController
         type: "admin"
       }
     end
+        # 同上
 
     staff_data = staffs.map do |s|
       {
