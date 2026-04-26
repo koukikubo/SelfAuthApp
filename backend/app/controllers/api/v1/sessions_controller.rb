@@ -1,21 +1,20 @@
 class Api::V1::SessionsController < ApplicationController
-
   def show
-    if session[:admin_id]
-      admin = Admin.find_by(id: session[:admin_id])
-      return render json: { type: "admin", id: admin.id } if admin
-    end
-
-    if session[:staff_id]
-      staff = Staff.find_by(id: session[:staff_id])
-      return render json: { type: "staff", id: staff.id } if staff
-    end
-
-    render json: { error: "未ログイン" }, status: :unauthorized
+    # application_controllerで判断するため、current_userを使用。
+    user = current_user
+    # userが無ければ、401
+    return render json: { error: "未ログイン" }, status: :unauthorized unless user
+    # 正常レスポンス
+    render json: {
+      id: user.id,
+      name: user.name,
+      type: user.is_a?(Admin) ? "admin" : "staff",
+      role: user.try(:role)
+    }
   end
-  
+
   def destroy
     reset_session
-    render json: { message: "ログアウトしました" }, status: :ok
+    head :no_content
   end
 end
