@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       get "csrf", to: "csrf#show" 
 
       get "login_candidates", to: "login_candidates#index"
+      resources :staffs, only: [:index, :create, :update, :destroy]
     end
   end
 end
