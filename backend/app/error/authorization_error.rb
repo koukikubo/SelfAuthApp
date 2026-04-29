@@ -1,0 +1,1 @@
+class AuthorizationError < ApplicationError; end

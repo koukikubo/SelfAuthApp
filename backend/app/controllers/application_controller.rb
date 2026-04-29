@@ -1,4 +1,10 @@
 class ApplicationController < ActionController::Base
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+  rescue_from AuthorizationError, with: :render_forbidden
+  rescue_from BusinessError, with: :render_unprocessable_entity
+  rescue_from ActiveRecord::RecordInvalid, with: :render_record_invalid
+
+  
   # セッション保持時間を１時間に設定
   TIMEOUT = 60.minutes
   # 認証ロジックの共通化
@@ -22,7 +28,7 @@ class ApplicationController < ActionController::Base
       reset_session
       return nil
     end
-    無操作か確認
+    # 無操作か確認
     return nil unless check_timeout
 
     user
@@ -48,5 +54,23 @@ class ApplicationController < ActionController::Base
     # OKの場合は、更新
     session[:last_access_at] = Time.current
     true
+  end
+
+
+  # エラー処理
+  def render_not_found(error)
+    render json: { error: error.message }, status: :not_found
+  end
+
+  def render_forbidden(error)
+    render json: { error: error.message }, status: :forbidden
+  end
+
+  def render_unprocessable_entity(error)
+    render json: { error: error.message }, status: :unprocessable_entity
+  end
+
+  def render_record_invalid(error)
+    render json: { error: error.record.errors.full_messages }, status: :unprocessable_entity
   end
 end
