@@ -48,9 +48,11 @@ export default async function HomePage() {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href="/staff-masters">担当者マスタ</Link>
-              </DropdownMenuItem>
+              {user.role === "owner" || user.type === "admin" ? (
+                <DropdownMenuItem asChild>
+                  <Link href="/staff-masters">担当者マスタ</Link>
+                </DropdownMenuItem>
+              ) : null}
               <LogoutButton />
             </DropdownMenuContent>
           </DropdownMenu>
