@@ -9,13 +9,18 @@ module Auth
       end
 
       def call
+        Rails.logger.debug("LoginService start id=#{@id}")
+
         staff = ::Staff.find_by(id: @id)
+        Rails.logger.debug("staff=#{staff.inspect}")
 
         result = Auth::Staff::StaffAuthenticator.new(@id, @password).authenticate
-
+        Rails.logger.debug("result=#{result.inspect}")
+        
         case result
         when :success
           handle_success(staff)
+          return staff
         when :invalid_password
           handle_failure(staff)
         when :inactive
@@ -28,12 +33,13 @@ module Auth
       end
 
       private
-
+      # 検証に成功したとき
       def handle_success(staff)
         staff.reset_failed_attempts!
         log_info("login success staff_id=#{staff.id}")
+        
       end
-
+      # 検証に失敗したとき
       def handle_failure(staff)
         staff.register_failed_attempt!
 
@@ -43,7 +49,7 @@ module Auth
 
         log_info("login failed staff_id=#{staff.id} attempts=#{staff.failed_attempts}")
 
-        raise BusinessError, "パスワードが不正です"
+        raise BusinessError, "正しいパスワードを入力してください。"
       end
 
       def lock_account!(staff)
@@ -52,7 +58,7 @@ module Auth
           operator: system_operator
         )
       end
-
+      # システム内部処理用の管理者ユーザー（account_lock_service.rb）
       def system_operator
         OpenStruct.new(id: "system", owner?: true)
       end
