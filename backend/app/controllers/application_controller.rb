@@ -35,11 +35,10 @@ class ApplicationController < ActionController::Base
   end
   # 権限チェック
   def require_owner_or_admin!
-    # AdminならOK
-    return if current_admin
+    user = current_user
 
-    # 機能制限を権限で決める
-    return if current_staff&.owner?
+    return if user.is_a?(Admin)
+    return if user.is_a?(Staff) && user.owner?
 
     render json: { error: "権限がありません" }, status: :forbidden
   end
