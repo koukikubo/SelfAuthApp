@@ -10,8 +10,10 @@ Rails.application.routes.draw do
 
       get "login_candidates", to: "login_candidates#index"
       resources :staffs, only: [:index, :create, :update, :destroy] do
-        patch :account_unlock, on: member
-        patch :account_lock, on: member          
+        member do
+          patch :account_unlock
+          patch :account_lock
+        end
       end
     end
   end
