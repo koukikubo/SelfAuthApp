@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import LogoutButton from "@/components/auth/Logout";
 import { getCurrentSession } from "@/lib/current-session";
+import Link from "next/link";
 
 export default async function HomePage() {
   const user = await getCurrentSession();
@@ -48,9 +49,8 @@ export default async function HomePage() {
 
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <a href="/staffs">担当者マスタ</a>
+                <Link href="/staff-masters">担当者マスタ</Link>
               </DropdownMenuItem>
-
               <LogoutButton />
             </DropdownMenuContent>
           </DropdownMenu>
