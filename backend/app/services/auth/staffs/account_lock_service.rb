@@ -1,5 +1,5 @@
 module Auth
-  module Staff
+  module Staffs
     class AccountLockService < BaseService
       def initialize(staff:, operator:)
         @staff = staff
@@ -11,7 +11,7 @@ module Auth
         authorize!
         # 例外が出たらロールバック
         with_transaction do
-          raise BusinessError, "すでにロック済みです" if @staff.account_locked?
+          raise BusinessError, "すでにアカウントロック済みです" if @staff.account_locked?
 
           @staff.update!(
             account_locked: true
