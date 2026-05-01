@@ -30,7 +30,7 @@ class Api::V1::StaffsController < ApplicationController
       operator: current_user
     )
 
-    render json: { message: "ロックしました", staff: staff }
+    render json: { message: "アカウントをロックしました。解除は管理者へ申請してください。", staff: staff }
   end
 
   def account_unlock
@@ -41,7 +41,7 @@ class Api::V1::StaffsController < ApplicationController
       operator: current_user
     )
 
-    render json: { message: "ロック解除しました" }
+    render json: { message: "アカウントのロックを解除しました" }
   end
 
   private

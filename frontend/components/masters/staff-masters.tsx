@@ -26,7 +26,6 @@ export default function StaffMasters({ staffs }: Props) {
         </p>
       </div>
 
-      {/* 検索 + 新規 */}
       <div className="flex justify-between gap-4">
         <Button>新規登録</Button>
       </div>
