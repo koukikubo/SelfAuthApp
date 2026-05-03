@@ -1,18 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { staffRoleLabel } from "@/lib/staff-role";
+import { staffRoleLabel } from "@/constants/staff-role";
+import { Staff } from "@/types/staff";
+import Link from "next/link";
 
 type Props = {
   staffs: Staff[];
-};
-
-type Staff = {
-  id: number;
-  name: string;
-  role: keyof typeof staffRoleLabel;
-  locked: boolean;
-  effective_to: string;
 };
 
 export default function StaffMasters({ staffs }: Props) {
@@ -27,7 +21,9 @@ export default function StaffMasters({ staffs }: Props) {
       </div>
 
       <div className="flex justify-between gap-4">
-        <Button>新規登録</Button>
+        <Button>
+          <Link href="/staff-masters/new">新規登録</Link>
+        </Button>
       </div>
 
       {/* テーブル */}
@@ -60,9 +56,11 @@ export default function StaffMasters({ staffs }: Props) {
                 <td className="p-3">{staff.effective_to ?? "ー"}</td>
 
                 <td className="p-3 flex gap-2">
-                  <Button size="sm" variant="outline">
-                    編集
-                  </Button>
+                  <Link href={`/staff-masters/${staff.id}/edit`}>
+                    <Button size="sm" variant="outline">
+                      編集
+                    </Button>
+                  </Link>
 
                   {staff.locked ? (
                     <Button size="sm">解除</Button>
