@@ -1,12 +1,6 @@
 import { cache } from "react";
 import { headers } from "next/headers";
-
-export type CurrentSession = {
-  id: number;
-  name: string;
-  type: "admin" | "staff";
-  role?: string | null;
-};
+import { CurrentUser } from "@/types/auth";
 
 function requestOrigin(headers: Headers): string {
   const protocol =
@@ -21,20 +15,22 @@ function requestOrigin(headers: Headers): string {
   return `${protocol}://${host}`;
 }
 
-export const getCurrentSession = cache(async (): Promise<CurrentSession | null> => {
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? "";
+export const getCurrentSession = cache(
+  async (): Promise<CurrentUser | null> => {
+    const headerStore = await headers();
+    const cookieHeader = headerStore.get("cookie") ?? "";
 
-  const res = await fetch(`${requestOrigin(headerStore)}/api/v1/session`, {
-    cache: "no-store",
-    headers: {
-      Cookie: cookieHeader,
-    },
-  });
+    const res = await fetch(`${requestOrigin(headerStore)}/api/v1/session`, {
+      cache: "no-store",
+      headers: {
+        Cookie: cookieHeader,
+      },
+    });
 
-  if (!res.ok) {
-    return null;
-  }
+    if (!res.ok) {
+      return null;
+    }
 
-  return res.json();
-});
+    return res.json();
+  },
+);
