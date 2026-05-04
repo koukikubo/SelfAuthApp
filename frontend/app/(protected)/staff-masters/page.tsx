@@ -1,7 +1,7 @@
 import StaffMasters from "@/components/masters/staffs/staff-masters";
-import { canManageStaff } from "@/lib/authorization";
-import { getCurrentSession } from "@/lib/current-session";
-import { authFetch } from "@/lib/server-fetch";
+import { canManageStaff } from "@/lib/auth/authorization";
+import { getCurrentSession } from "@/lib/auth/current-session";
+import { authFetch } from "@/lib/api/server-fetch";
 import { redirect } from "next/navigation";
 
 export default async function Page() {

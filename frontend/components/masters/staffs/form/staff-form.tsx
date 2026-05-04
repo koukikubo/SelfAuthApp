@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+
 import { Staff, StaffRole } from "@/types/staff";
-import { createStaff, updateStaff } from "@/lib/staff-client-api";
+import { createStaff, updateStaff } from "@/lib/staff/staff-client-api";
 
 type Props = {
   mode?: "new" | "edit";
@@ -72,6 +73,7 @@ export default function StaffForm({ mode = "new", initialData }: Props) {
       const res = isEdit
         ? await updateStaff(initialData!.id, payload)
         : await createStaff(payload);
+      // console.log("initialData:", initialData);
 
       const data = await res.json();
 

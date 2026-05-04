@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import LogoutButton from "@/components/auth/Logout";
-import { getCurrentSession } from "@/lib/current-session";
+import { getCurrentSession } from "@/lib/auth/current-session";
 import Link from "next/link";
 
 export default async function HomePage() {
