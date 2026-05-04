@@ -1,3 +1,4 @@
+// セッション取得
 import { cache } from "react";
 import { headers } from "next/headers";
 import { CurrentUser } from "@/types/auth";
