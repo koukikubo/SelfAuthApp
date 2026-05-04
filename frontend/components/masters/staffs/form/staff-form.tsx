@@ -8,21 +8,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Staff, StaffRole } from "@/types/staff";
+import { createStaff, updateStaff } from "@/lib/staff-client-api";
 
 type Props = {
   mode?: "new" | "edit";
   initialData?: Staff;
 };
 
-export default function StaffForm({ mode = "new" }: Props) {
+export default function StaffForm({ mode = "new", initialData }: Props) {
   const router = useRouter();
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState(initialData?.name ?? "");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [role, setRole] = useState<StaffRole>("viewer");
-  const [effectiveFrom, setEffectiveFrom] = useState("");
-  const [effectiveTo, setEffectiveTo] = useState("");
+  const [role, setRole] = useState<StaffRole>(initialData?.role ?? "viewer");
+  const [effectiveFrom, setEffectiveFrom] = useState(
+    initialData?.effective_from?.slice(0, 10) ?? "",
+  );
+  const [effectiveTo, setEffectiveTo] = useState(
+    initialData?.effective_to?.slice(0, 10) ?? "",
+  );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -53,23 +58,20 @@ export default function StaffForm({ mode = "new" }: Props) {
     try {
       setLoading(true);
 
-      const res = await fetch("/api/v1/staffs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const payload = {
+        staff: {
+          name,
+          password,
+          password_confirmation: passwordConfirmation,
+          role,
+          effective_from: effectiveFrom,
+          effective_to: effectiveTo || null,
         },
-        credentials: "include",
-        body: JSON.stringify({
-          staff: {
-            name,
-            password,
-            password_confirmation: passwordConfirmation,
-            role,
-            effective_from: effectiveFrom,
-            effective_to: effectiveTo || null,
-          },
-        }),
-      });
+      };
+
+      const res = isEdit
+        ? await updateStaff(initialData!.id, payload)
+        : await createStaff(payload);
 
       const data = await res.json();
 
@@ -111,7 +113,7 @@ export default function StaffForm({ mode = "new" }: Props) {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="例: 大阪太郎"
+                placeholder=""
               />
             </div>
 
@@ -175,7 +177,7 @@ export default function StaffForm({ mode = "new" }: Props) {
 
             <div className="flex gap-3 pt-2">
               <Button type="submit" disabled={loading}>
-                {loading ? "保存中..." : "登録する"}
+                {loading ? "保存中..." : isEdit ? "更新する" : "登録する"}
               </Button>
 
               <Button
