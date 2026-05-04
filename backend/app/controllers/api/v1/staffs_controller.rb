@@ -12,6 +12,11 @@ class Api::V1::StaffsController < ApplicationController
     render json: staff, status: :created
   end
 
+  def show
+    staff = Staff.find(params[:id])
+    render json: staff
+  end
+
   def update
     staff = Staff.find(params[:id])
     staff.update!(staff_params)
