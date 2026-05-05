@@ -23,9 +23,13 @@ class ApplicationController < ActionController::Base
     elsif session[:staff_id]
       Staff.find_by(id: session[:staff_id])
     end
+
+    Rails.logger.debug("user_id=#{user&.id}, type=#{user&.class}")    
+    Rails.logger.debug("active_for_login?=#{user&.active_for_login?}")
+
     # 有効かどうかをチェック
     unless user&.active_for_login?
-      reset_session
+      Rails.logger.debug("ログイン無効でreset_session")
       return nil
     end
     # 無操作か確認
@@ -44,7 +48,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_timeout
-    return unless session[:last_access_at]
+    return true unless session[:last_access_at]
 
     if session[:last_access_at] < TIMEOUT.ago
       reset_session
@@ -71,5 +75,13 @@ class ApplicationController < ActionController::Base
 
   def render_record_invalid(error)
     render json: { error: error.record.errors.full_messages }, status: :unprocessable_entity
+  end
+
+  rescue_from AuthorizationError do |e|
+    render json: { error: e.message }, status: :forbidden
+  end
+
+  rescue_from BusinessError do |e|
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 end
