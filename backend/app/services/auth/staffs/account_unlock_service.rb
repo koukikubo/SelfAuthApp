@@ -1,15 +1,15 @@
 module Auth
-  module Staff
+  module Staffs
     # 担当者マスタのアカウントロック解除のメソッド
     class AccountUnlockService < BaseService
-      def initialize(staff, operator)
+      def initialize(staff:, operator:)
         @staff = staff
         @operator = operator
       end
 
       def call
-        raise "権限なし" unless allowed?
-
+        raise AuthorizationError, "権限がありません" unless allowed?
+        
         @staff.update!(
           account_locked: false,
           failed_attempts: 0
@@ -23,7 +23,7 @@ module Auth
       private
 
       def allowed?
-        @operator.is_a?(Admin) || @operator&.owner?
+        @operator.is_a?(::Admin) || (@operator.is_a?(::Staff) && @operator.owner?)
       end
 
       def log_action

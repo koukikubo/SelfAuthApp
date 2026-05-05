@@ -26,9 +26,10 @@ module Auth
       private
       # 管理者、owner権限であればOK
       def authorize!
-        unless @operator.is_a?(Admin) || @operator&.owner?
-          raise AuthorizationError, "権限がありません"
-        end
+        return if @operator.is_a?(::Admin)
+        return if @operator.is_a?(::Staff) && @operator.owner?
+
+        raise AuthorizationError, "権限がありません"
       end
     end
   end
