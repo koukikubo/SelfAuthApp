@@ -4,7 +4,14 @@ class Api::V1::StaffsController < ApplicationController
 
   def index
     staffs = Staff.where(deleted: false)
-    render json: staffs
+    render json: staffs.map { |s| {
+      id: s.id,
+      name: s.name,
+      role: s.role,
+      account_locked: s.account_locked,
+      effective_from: s.effective_from,
+      effective_to: s.effective_to
+    } }
   end
 
   def create
@@ -14,13 +21,27 @@ class Api::V1::StaffsController < ApplicationController
 
   def show
     staff = Staff.find(params[:id])
-    render json: staff
+    render json: {
+      id: staff.id,
+      name: staff.name,
+      role: staff.role,
+      account_locked: staff.account_locked,
+      effective_from: staff.effective_from,
+      effective_to: staff.effective_to
+    }
   end
 
   def update
     staff = Staff.find(params[:id])
     staff.update!(staff_params)
-    render json: staff
+    render json: {
+      id: staff.id,
+      name: staff.name,
+      role: staff.role,
+      account_locked: staff.account_locked,
+      effective_from: staff.effective_from,
+      effective_to: staff.effective_to
+    }
   end
 
   def destroy
@@ -30,7 +51,7 @@ class Api::V1::StaffsController < ApplicationController
   end
 
   def account_lock
-    staff = Auth::Staff::AccountLockService.call(
+    staff = Auth::Staffs::AccountLockService.call(
       staff: @staff,
       operator: current_user
     )
@@ -39,9 +60,7 @@ class Api::V1::StaffsController < ApplicationController
   end
 
   def account_unlock
-    staff = Staff.find(params[:id])
-
-    Auth::Staff::AccountUnlockService.call(
+    staff = Auth::Staffs::AccountUnlockService.call(
       staff: @staff,
       operator: current_user
     )
