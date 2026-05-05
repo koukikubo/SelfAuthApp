@@ -13,3 +13,17 @@ export async function updateStaff(id: number, payload: unknown) {
     body: JSON.stringify(payload),
   });
 }
+// ----------------------------------------------------------------
+// 担当者のアカウントロック
+export async function lockStaffAccount(id: number) {
+  return apiFetch(`/api/v1/staffs/${id}/account_lock`, {
+    method: "PATCH",
+  });
+}
+
+// 担当者のアカウントアンロック
+export async function unlockStaffAccount(id: number) {
+  return apiFetch(`/api/v1/staffs/${id}/account_unlock`, {
+    method: "PATCH",
+  });
+}

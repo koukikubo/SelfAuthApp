@@ -2,14 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 import { staffRoleLabel } from "@/constants/staff-role";
+import {
+  lockStaffAccount,
+  unlockStaffAccount,
+} from "@/lib/staff/staff-client-api";
 import { Staff } from "@/types/staff";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type Props = {
   staffs: Staff[];
 };
 
 export default function StaffMasters({ staffs }: Props) {
+  const router = useRouter();
   return (
     <div className="space-y-6">
       {/* タイトル */}
@@ -46,7 +52,7 @@ export default function StaffMasters({ staffs }: Props) {
                 <td className="p-3">{staffRoleLabel[staff.role]}</td>
 
                 <td className="p-3">
-                  {staff.locked ? (
+                  {staff.account_locked ? (
                     <span className="text-red-500">ロック中</span>
                   ) : (
                     <span className="text-green-600">有効</span>
@@ -62,10 +68,25 @@ export default function StaffMasters({ staffs }: Props) {
                     </Button>
                   </Link>
 
-                  {staff.locked ? (
-                    <Button size="sm">解除</Button>
+                  {staff.account_locked ? (
+                    <Button
+                      size="sm"
+                      onClick={async () => {
+                        await unlockStaffAccount(staff.id);
+                        router.refresh();
+                      }}
+                    >
+                      解除
+                    </Button>
                   ) : (
-                    <Button size="sm" variant="destructive">
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={async () => {
+                        await lockStaffAccount(staff.id);
+                        router.refresh();
+                      }}
+                    >
                       ロック
                     </Button>
                   )}
