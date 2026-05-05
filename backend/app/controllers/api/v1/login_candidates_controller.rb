@@ -1,4 +1,5 @@
 class Api::V1::LoginCandidatesController < ApplicationController
+  # システムログイン画面ログイン前のコントローラー
   def index
     today = Date.current
     admins = Admin

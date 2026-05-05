@@ -11,7 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import LogoutButton from "@/components/auth/Logout";
-import { getCurrentSession } from "@/lib/current-session";
+import { getCurrentSession } from "@/lib/auth/current-session";
+import Link from "next/link";
 
 export default async function HomePage() {
   const user = await getCurrentSession();
@@ -47,10 +48,11 @@ export default async function HomePage() {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <a href="/staffs">担当者マスタ</a>
-              </DropdownMenuItem>
-
+              {user.role === "owner" || user.type === "admin" ? (
+                <DropdownMenuItem asChild>
+                  <Link href="/staff-masters">担当者マスタ</Link>
+                </DropdownMenuItem>
+              ) : null}
               <LogoutButton />
             </DropdownMenuContent>
           </DropdownMenu>

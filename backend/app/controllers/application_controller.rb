@@ -1,4 +1,10 @@
 class ApplicationController < ActionController::Base
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+  rescue_from AuthorizationError, with: :render_forbidden
+  rescue_from BusinessError, with: :render_unprocessable_entity
+  rescue_from ActiveRecord::RecordInvalid, with: :render_record_invalid
+
+  
   # セッション保持時間を１時間に設定
   TIMEOUT = 60.minutes
   # 認証ロジックの共通化
@@ -17,29 +23,32 @@ class ApplicationController < ActionController::Base
     elsif session[:staff_id]
       Staff.find_by(id: session[:staff_id])
     end
+
+    Rails.logger.debug("user_id=#{user&.id}, type=#{user&.class}")    
+    Rails.logger.debug("active_for_login?=#{user&.active_for_login?}")
+
     # 有効かどうかをチェック
     unless user&.active_for_login?
-      reset_session
+      Rails.logger.debug("ログイン無効でreset_session")
       return nil
     end
-    無操作か確認
+    # 無操作か確認
     return nil unless check_timeout
 
     user
   end
   # 権限チェック
   def require_owner_or_admin!
-    # AdminならOK
-    return if current_admin
+    user = current_user
 
-    # 機能制限を権限で決める
-    return if current_staff&.owner?
+    return if user.is_a?(Admin)
+    return if user.is_a?(Staff) && user.owner?
 
     render json: { error: "権限がありません" }, status: :forbidden
   end
 
   def check_timeout
-    return unless session[:last_access_at]
+    return true unless session[:last_access_at]
 
     if session[:last_access_at] < TIMEOUT.ago
       reset_session
@@ -48,5 +57,31 @@ class ApplicationController < ActionController::Base
     # OKの場合は、更新
     session[:last_access_at] = Time.current
     true
+  end
+
+
+  # エラー処理
+  def render_not_found(error)
+    render json: { error: error.message }, status: :not_found
+  end
+
+  def render_forbidden(error)
+    render json: { error: error.message }, status: :forbidden
+  end
+
+  def render_unprocessable_entity(error)
+    render json: { error: error.message }, status: :unprocessable_entity
+  end
+
+  def render_record_invalid(error)
+    render json: { error: error.record.errors.full_messages }, status: :unprocessable_entity
+  end
+
+  rescue_from AuthorizationError do |e|
+    render json: { error: e.message }, status: :forbidden
+  end
+
+  rescue_from BusinessError do |e|
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 end
