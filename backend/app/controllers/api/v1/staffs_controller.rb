@@ -47,6 +47,13 @@ class Api::V1::StaffsController < ApplicationController
     render json: staff_json(@staff)
   end
 
+  def retired
+    staffs = Staff.where(deleted: true)
+    render json: staffs.map { |s|
+    staff_json(s)
+  }
+  end
+
   def restore
     @staff.update!(deleted: false)
     render json: staff_json(@staff)
