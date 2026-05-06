@@ -23,3 +23,14 @@ export async function fetchStaffs() {
   const data = await res.json();
   return data.staffs ?? data;
 }
+// ----------------------------------------------------------------
+// 退職者一覧を取得する関数
+export async function fetchRetiredStaffs() {
+  const res = await authFetch("/api/v1/staffs/retired");
+
+  if (!res.ok) {
+    throw new Error("退職者一覧取得失敗");
+  }
+
+  return res.json();
+}
