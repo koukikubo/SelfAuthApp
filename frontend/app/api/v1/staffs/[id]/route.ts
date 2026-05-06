@@ -15,3 +15,11 @@ export async function PATCH(
   const { id } = await params;
   return proxyRequest(request, `/api/v1/staffs/${id}`, "PATCH");
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  return proxyRequest(request, `/api/v1/staffs/${id}`, "DELETE");
+}
