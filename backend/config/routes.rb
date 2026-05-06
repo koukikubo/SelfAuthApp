@@ -13,6 +13,11 @@ Rails.application.routes.draw do
         member do
           patch :account_unlock
           patch :account_lock
+          patch :retire
+          patch :restore
+        end
+        collection do
+          get :retired
         end
       end
     end

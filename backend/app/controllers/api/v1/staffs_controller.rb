@@ -1,17 +1,10 @@
 class Api::V1::StaffsController < ApplicationController
   before_action :require_owner_or_admin!
-  before_action :set_staff, only: [:account_lock, :account_unlock]
+  before_action :set_staff, only: [:show, :update, :destroy, :account_lock, :account_unlock, :retire, :restore]
 
   def index
     staffs = Staff.where(deleted: false)
-    render json: staffs.map { |s| {
-      id: s.id,
-      name: s.name,
-      role: s.role,
-      account_locked: s.account_locked,
-      effective_from: s.effective_from,
-      effective_to: s.effective_to
-    } }
+    render json: staffs.map { |s| staff_json(s) }
   end
 
   def create
@@ -20,33 +13,16 @@ class Api::V1::StaffsController < ApplicationController
   end
 
   def show
-    staff = Staff.find(params[:id])
-    render json: {
-      id: staff.id,
-      name: staff.name,
-      role: staff.role,
-      account_locked: staff.account_locked,
-      effective_from: staff.effective_from,
-      effective_to: staff.effective_to
-    }
+    render json: staff_json(@staff)
   end
 
   def update
-    staff = Staff.find(params[:id])
-    staff.update!(staff_params)
-    render json: {
-      id: staff.id,
-      name: staff.name,
-      role: staff.role,
-      account_locked: staff.account_locked,
-      effective_from: staff.effective_from,
-      effective_to: staff.effective_to
-    }
+    @staff.update!(staff_params)
+    render json: staff_json(@staff)
   end
 
   def destroy
-    staff = Staff.find(params[:id])
-    staff.update!(deleted: true)
+    @staff.destroy!
     head :no_content
   end
 
@@ -55,7 +31,6 @@ class Api::V1::StaffsController < ApplicationController
       staff: @staff,
       operator: current_user
     )
-
     render json: { message: "アカウントをロックしました。解除は管理者へ申請してください。", staff: staff }
   end
 
@@ -64,8 +39,17 @@ class Api::V1::StaffsController < ApplicationController
       staff: @staff,
       operator: current_user
     )
-
     render json: { message: "アカウントのロックを解除しました" }
+  end
+
+  def retire
+    @staff.update!(deleted: true)
+    render json: staff_json(@staff)
+  end
+
+  def restore
+    @staff.update!(deleted: false)
+    render json: staff_json(@staff)
   end
 
   private
@@ -79,6 +63,17 @@ class Api::V1::StaffsController < ApplicationController
       :effective_from,
       :effective_to
     )
+  end
+
+  def staff_json(staff)
+    {
+      id: staff.id,
+      name: staff.name,
+      role: staff.role,
+      account_locked: staff.account_locked,
+      effective_from: staff.effective_from,
+      effective_to: staff.effective_to
+    }
   end
 
   def set_staff
