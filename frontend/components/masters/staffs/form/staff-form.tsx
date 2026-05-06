@@ -158,7 +158,7 @@ export default function StaffForm({ mode = "new", initialData }: Props) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="effectiveFrom">適用開始日</Label>
+              <Label htmlFor="effectiveFrom">入社日</Label>
               <Input
                 id="effectiveFrom"
                 type="date"
@@ -168,7 +168,7 @@ export default function StaffForm({ mode = "new", initialData }: Props) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="effectiveTo">適用終了日（任意）</Label>
+              <Label htmlFor="effectiveTo">退職日</Label>
               <Input
                 id="effectiveTo"
                 type="date"
