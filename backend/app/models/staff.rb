@@ -1,6 +1,9 @@
 class Staff < ApplicationRecord
   has_secure_password
   
+  scope :active, -> { where(deleted: false) }
+  scope :retired, -> { where(deleted: true) }
+  
   # 権限の定義
   enum role: {
     viewer: 0,

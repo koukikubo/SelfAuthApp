@@ -53,14 +53,8 @@ module Auth
       end
 
       def lock_account!(staff)
-        Auth::Staff::LockService.call(
-          staff: staff,
-          operator: system_operator
-        )
-      end
-      # システム内部処理用の管理者ユーザー（account_lock_service.rb）
-      def system_operator
-        OpenStruct.new(id: "system", owner?: true)
+        staff.update!(account_locked: true)
+        log_info("staff_id=#{staff.id} locked by failed attempts")
       end
     end
   end
